@@ -16,11 +16,10 @@ def main(ctx: click.Context) -> None:
     Use 'trex cli <command>' for pure CLI operations.
     """
     if ctx.invoked_subcommand is None:
-        # No subcommand provided, launch main TUI
-        from tunrex.tui.main import MainApp
+        # No subcommand provided, launch main TUI with app switching
+        from tunrex.tui.main import main as run_main_tui
 
-        app = MainApp()
-        app.run()
+        run_main_tui()
 
 
 @main.command()

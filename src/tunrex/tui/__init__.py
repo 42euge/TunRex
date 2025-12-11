@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
 AVAILABLE_APPS: dict[str, str] = {
     "main": "The main TunRex TUI dashboard",
+    "dataset": "Dataset explorer for browsing and analyzing data",
 }
 
 
@@ -23,4 +24,8 @@ def get_app(name: str) -> type["App"] | None:
         from tunrex.tui.main import MainApp
 
         return MainApp
+    if name == "dataset":
+        from tunrex.tui.dataset_explorer import DatasetExplorerApp
+
+        return DatasetExplorerApp
     return None
