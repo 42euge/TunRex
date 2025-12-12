@@ -6,10 +6,10 @@ import csv
 import os
 import shutil
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-if TYPE_CHECKING:
-    from datasets import Dataset
+# Import datasets early to avoid numpy/scipy conflicts in some environments
+from datasets import load_dataset as _hf_load_dataset
 
 
 def extract_hash_answer(text: str) -> str | None:
@@ -79,7 +79,7 @@ def load_from_huggingface(
     dataset_name: str,
     split: str = "train",
     subset: str | None = None,
-) -> "Dataset":
+):
     """Load dataset from HuggingFace Hub.
 
     Args:
@@ -90,13 +90,11 @@ def load_from_huggingface(
     Returns:
         HuggingFace Dataset object
     """
-    from datasets import load_dataset
-
     os.environ["HF_HUB_DISABLE_XET"] = "1"
 
     if subset:
-        return load_dataset(dataset_name, subset, split=split)
-    return load_dataset(dataset_name, split=split)
+        return _hf_load_dataset(dataset_name, subset, split=split)
+    return _hf_load_dataset(dataset_name, split=split)
 
 
 def load_from_tfds(data_dir: str, split: str = "train"):
@@ -162,10 +160,8 @@ def load_openrubrics(
     Returns:
         List of processed examples with standardized keys
     """
-    from datasets import load_dataset
-
     try:
-        raw_ds = load_dataset("OpenRubrics/OpenRubrics", split=split)
+        raw_ds = _hf_load_dataset("OpenRubrics/OpenRubrics", split=split)
     except Exception as e:
         print(f"Could not load OpenRubrics split {split}: {e}")
         return []
