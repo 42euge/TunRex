@@ -1,11 +1,8 @@
-"""TunRex - A flexible TUI/CLI toolkit for ML dataset management."""
+"""TunRex datasets module for loading and preparing ML training datasets."""
 
-__version__ = "0.1.0"
-
-# Dataset loading API
-from tunrex.datasets import (
-    TunRex,
-    TunRexConfig,
+from tunrex.datasets.config import TunRexConfig
+from tunrex.datasets.core import TunRex
+from tunrex.datasets.loaders import (
     download_kaggle_dataset,
     extract_hash_answer,
     load_from_huggingface,
@@ -13,7 +10,6 @@ from tunrex.datasets import (
 )
 
 __all__ = [
-    "__version__",
     "TunRex",
     "TunRexConfig",
     "download_kaggle_dataset",

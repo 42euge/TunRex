@@ -13,6 +13,10 @@ dependencies = [
     "pandas>=2.0.0",
     "pyarrow>=14.0.0",
     "jsonlines>=4.0.0",
+    # Dataset loading dependencies
+    "grain>=0.2.0",
+    "datasets>=2.14.0",
+    "kagglehub>=0.2.0",
 ]
 
 [project.scripts]
@@ -22,6 +26,9 @@ trex = "tunrex.cli:main"
 dev = [
     "pytest>=8.0.0",
     "ruff>=0.8.0",
+]
+tfds = [
+    "tensorflow-datasets>=4.9.0",
 ]
 
 [build-system]
