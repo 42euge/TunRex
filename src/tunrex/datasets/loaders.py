@@ -8,6 +8,9 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+# Set env var BEFORE importing datasets to avoid issues
+os.environ["HF_HUB_DISABLE_XET"] = "1"
+
 # Import datasets early to avoid numpy/scipy conflicts in some environments
 from datasets import load_dataset as _hf_load_dataset
 
