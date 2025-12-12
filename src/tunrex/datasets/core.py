@@ -259,3 +259,31 @@ class TunRex:
             transform = create_raw_transform()
 
         return [transform(data[i]) for i in range(min(n, len(data)))]
+
+    def preview(self, dataset=None, n: int = 1) -> None:
+        """Preview samples from a dataset.
+
+        Simple visualization of dataset contents using pprint.
+
+        Args:
+            dataset: A grain.MapDataset to preview. If None, previews raw train data.
+            n: Number of samples to show (default: 1)
+
+        Example:
+            >>> trex = TunRex(config)
+            >>> train_ds, val_ds, test_ds = trex.prepare_datasets()
+            >>> trex.preview(train_ds)
+        """
+        from pprint import pprint
+
+        if dataset is None:
+            # Preview raw samples
+            samples = self.get_sample("train", n)
+            print(f"Previewing {len(samples)} raw sample(s):")
+            for sample in samples:
+                pprint(sample)
+        else:
+            # Preview from dataset
+            print(f"Previewing {n} batch(es) from dataset:")
+            for ele in dataset[:n]:
+                pprint(ele)
