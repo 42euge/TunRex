@@ -260,30 +260,70 @@ class TunRex:
 
         return [transform(data[i]) for i in range(min(n, len(data)))]
 
-    def preview(self, dataset=None, n: int = 1) -> None:
-        """Preview samples from a dataset.
-
-        Simple visualization of dataset contents using pprint.
+    def preview(self, dataset=None, n: int = 1, max_width: int = 60) -> None:
+        """Preview samples from a dataset in ASCII table format.
 
         Args:
             dataset: A grain.MapDataset to preview. If None, previews raw train data.
             n: Number of samples to show (default: 1)
+            max_width: Maximum width for cell content (default: 60)
 
         Example:
             >>> trex = TunRex(config)
             >>> train_ds, val_ds, test_ds = trex.prepare_datasets()
             >>> trex.preview(train_ds)
         """
-        from pprint import pprint
-
         if dataset is None:
-            # Preview raw samples
             samples = self.get_sample("train", n)
             print(f"Previewing {len(samples)} raw sample(s):")
-            for sample in samples:
-                pprint(sample)
+            data_to_show = samples
         else:
-            # Preview from dataset
             print(f"Previewing {n} batch(es) from dataset:")
-            for ele in dataset[:n]:
-                pprint(ele)
+            data_to_show = list(dataset[:n])
+
+        for i, item in enumerate(data_to_show):
+            print(f"\n{'='*70}")
+            print(f" Sample {i + 1}")
+            print(f"{'='*70}")
+            self._print_table(item, max_width)
+
+    def _print_table(self, data: dict, max_width: int = 60) -> None:
+        """Print a dictionary as an ASCII table."""
+        if not data:
+            print("(empty)")
+            return
+
+        # Handle batched data (lists of values)
+        first_val = next(iter(data.values()))
+        is_batch = isinstance(first_val, (list, tuple)) and len(first_val) > 0
+
+        if is_batch:
+            # Print each item in the batch
+            batch_size = len(first_val)
+            for b in range(batch_size):
+                if b > 0:
+                    print(f"\n{'-'*70}")
+                    print(f" Batch item {b + 1}/{batch_size}")
+                    print(f"{'-'*70}")
+                for key, values in data.items():
+                    val = values[b] if b < len(values) else ""
+                    self._print_row(key, val, max_width)
+        else:
+            # Print single item
+            for key, value in data.items():
+                self._print_row(key, value, max_width)
+
+    def _print_row(self, key: str, value: Any, max_width: int) -> None:
+        """Print a single key-value row."""
+        # Truncate long values
+        val_str = str(value) if value is not None else "(None)"
+        if len(val_str) > max_width:
+            val_str = val_str[:max_width - 3] + "..."
+
+        # Handle multiline values
+        if "\n" in val_str:
+            lines = val_str.split("\n")
+            val_str = lines[0][:max_width - 3] + "..." if len(lines) > 1 else lines[0]
+
+        print(f"| {key:20} | {val_str}")
+        print(f"+{'-'*22}+{'-'*45}+")
